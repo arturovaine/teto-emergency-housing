@@ -1,95 +1,101 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="stylesheet" href="styles.css"></head><body>
-<title>Moradia de Emergência TETO</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
-
-<div class="page">
-  <header class="top">
-    <div>
-      <p class="eyebrow">Modelo 3D interativo · medidas em metros</p>
-      <h1>Moradia de Emergência TETO</h1>
-    </div>
-    <dl class="facts">
-      <div><dt>Área</dt><dd>18 m²</dd></div>
-      <div><dt>Planta</dt><dd>3,00 × 6,00</dd></div>
-      <div><dt>Painéis de parede</dt><dd>8</dd></div>
-      <div><dt>Pilotis</dt><dd>12</dd></div>
-      <div><dt>Montagem</dt><dd>2 dias</dd></div>
-    </dl>
-  </header>
-
-  <main class="work">
-    <section class="stage" aria-label="Modelo 3D">
-      <div class="viewport" id="viewport">
-        <canvas id="c" tabindex="0" aria-label="Modelo 3D da moradia de emergência. Use as setas para girar e + ou − para aproximar."></canvas>
-        <div class="views" role="group" aria-label="Vistas">
-          <button type="button" data-view="persp" aria-pressed="true">Perspectiva</button>
-          <button type="button" data-view="front" aria-pressed="false">Fachada</button>
-          <button type="button" data-view="side" aria-pressed="false">Lateral</button>
-          <button type="button" data-view="back" aria-pressed="false">Fundos</button>
-          <button type="button" data-view="top" aria-pressed="false">Planta</button>
-        </div>
-        <p class="hint" id="hint">Arraste para girar · role para aproximar · Shift + arraste para mover · clique numa peça</p>
-        <div class="tag" id="tag" hidden></div>
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Moradia de Emergência TETO</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="page">
+    <header class="top">
+      <div>
+        <p class="eyebrow">Modelo 3D interativo · medidas em metros</p>
+        <h1>Moradia de Emergência TETO</h1>
       </div>
+      <dl class="facts">
+        <div><dt>Área</dt><dd>18 m²</dd></div>
+        <div><dt>Planta</dt><dd>3,00 × 6,00</dd></div>
+        <div><dt>Painéis de parede</dt><dd>8</dd></div>
+        <div><dt>Pilotis</dt><dd>12</dd></div>
+        <div><dt>Montagem</dt><dd>2 dias</dd></div>
+      </dl>
+    </header>
 
-      <div class="controls">
-        <label class="ctl" for="step">
-          <span class="ctl-head"><span class="ctl-name">Montagem</span><output id="stepOut" for="step"></output></span>
-          <input type="range" id="step" min="1" max="7" step="1" value="7">
-        </label>
-        <label class="ctl" for="explode">
-          <span class="ctl-head"><span class="ctl-name">Vista explodida</span><output id="explodeOut" for="explode">montada</output></span>
-          <input type="range" id="explode" min="0" max="100" step="1" value="0">
-        </label>
-        <div class="toggles">
-          <label for="cotas"><input type="checkbox" id="cotas" checked> Cotas</label>
-          <label for="abertas"><input type="checkbox" id="abertas" checked> Porta e janelas abertas</label>
-          <fieldset class="seg">
-            <legend>Tábuas</legend>
-            <label for="tabH"><input type="radio" name="tab" id="tabH" value="h" checked> horizontais</label>
-            <label for="tabV"><input type="radio" name="tab" id="tabV" value="v"> verticais</label>
-          </fieldset>
+    <main class="work">
+      <section class="stage" aria-label="Modelo 3D">
+        <div class="viewport" id="viewport">
+          <canvas id="c" tabindex="0" aria-label="Modelo 3D da moradia de emergência. Use as setas para girar e + ou − para aproximar."></canvas>
+          <div class="views" role="group" aria-label="Vistas">
+            <button type="button" data-view="persp" aria-pressed="true">Perspectiva</button>
+            <button type="button" data-view="front" aria-pressed="false">Fachada</button>
+            <button type="button" data-view="side" aria-pressed="false">Lateral</button>
+            <button type="button" data-view="back" aria-pressed="false">Fundos</button>
+            <button type="button" data-view="top" aria-pressed="false">Planta</button>
+          </div>
+          <p class="hint" id="hint">Arraste para girar · role para aproximar · Shift + arraste para mover · clique numa peça</p>
+          <div class="tag" id="tag" hidden></div>
         </div>
-      </div>
-    </section>
 
-    <aside class="side">
-      <section>
-        <h2>Sequência de montagem</h2>
-        <div id="parts"></div>
+        <div class="controls">
+          <label class="ctl" for="step">
+            <span class="ctl-head"><span class="ctl-name">Montagem</span><output id="stepOut" for="step"></output></span>
+            <input type="range" id="step" min="1" max="7" step="1" value="7">
+          </label>
+          <label class="ctl" for="explode">
+            <span class="ctl-head"><span class="ctl-name">Vista explodida</span><output id="explodeOut" for="explode">montada</output></span>
+            <input type="range" id="explode" min="0" max="100" step="1" value="0">
+          </label>
+          <div class="toggles">
+            <label for="cotas"><input type="checkbox" id="cotas" checked> Cotas</label>
+            <label for="abertas"><input type="checkbox" id="abertas" checked> Porta e janelas abertas</label>
+            <fieldset class="seg">
+              <legend>Tábuas</legend>
+              <label for="tabH"><input type="radio" name="tab" id="tabH" value="h" checked> horizontais</label>
+              <label for="tabV"><input type="radio" name="tab" id="tabV" value="v"> verticais</label>
+            </fieldset>
+          </div>
+        </div>
       </section>
 
-      <section>
-        <h2>Ficha técnica</h2>
-        <table class="spec">
-          <tbody>
-            <tr><th>Área</th><td>18 m² (3,00 × 6,00 m). Existe versão de 15 m².<span class="src">T</span></td></tr>
-            <tr><th>Piso acima do solo</th><td>≈ 0,50 m<span class="src">U</span></td></tr>
-            <tr><th>Pilotis</th><td>12, em malha 4 × 3. Descrições antigas citam 15 a 17.<span class="src">T · S</span></td></tr>
-            <tr><th>Paredes</th><td>8 painéis: 2 Quadrado, 4 Diagonal, 2 Capela<span class="src">T</span></td></tr>
-            <tr><th>Modulação</th><td>2,40 + 1,20 + 2,40 m na fachada; 3,00 m na lateral<span class="src">S</span></td></tr>
-            <tr><th>Altura da parede</th><td>1,90 m no beiral · 2,45 m na cumeeira<span class="src">S</span></td></tr>
-            <tr><th>Caimento</th><td>≈ 18% (10°), duas águas<span class="src">S</span></td></tr>
-            <tr><th>Piso</th><td>5 painéis de 1,20 × 3,00 m<span class="src">S</span></td></tr>
-            <tr><th>Cobertura</th><td>Telha de aço zincado sobre manta térmica<span class="src">U</span></td></tr>
-            <tr><th>Mutirão</th><td>2 dias, 8 a 10 voluntários com a família<span class="src">U · T</span></td></tr>
-            <tr><th>Vida útil estimada</th><td>5 anos<span class="src">U</span></td></tr>
-            <tr><th>Custo em 2012</th><td>R$ 3.500 por casa; a família contribuía com R$ 150<span class="src">U</span></td></tr>
-          </tbody>
-        </table>
-      </section>
+      <aside class="side">
+        <section>
+          <h2>Sequência de montagem</h2>
+          <div id="parts"></div>
+        </section>
 
-      <p class="note">
-        <b>T</b> <a href="https://br.techo.org/blog/os-diferentes-tipos-de-moradia-da-teto-brasil/">TETO Brasil</a> e figuras TETO 2015 ·
-        <b>U</b> <a href="https://bdta.abcd.usp.br/directbitstream/60903a0e-42fa-4d19-907b-6eec0f05e07d/LPedote.pdf">TCC Poli-USP, 2012</a> ·
-        <b>S</b> medido nas vistas do modelo SketchUp TETO 2017, com margem de uns 5 cm.
-        Seções de vigas, caibros e ripas foram estimadas pelas fotos de obra. Este modelo é uma reconstrução a partir de material público e não substitui o projeto executivo da TETO.
-      </p>
-    </aside>
-  </main>
-</div>
+        <section>
+          <h2>Ficha técnica</h2>
+          <table class="spec">
+            <tbody>
+              <tr><th>Área</th><td>18 m² (3,00 × 6,00 m). Existe versão de 15 m².<span class="src">T</span></td></tr>
+              <tr><th>Piso acima do solo</th><td>≈ 0,50 m<span class="src">U</span></td></tr>
+              <tr><th>Pilotis</th><td>12, em malha 4 × 3. Descrições antigas citam 15 a 17.<span class="src">T · S</span></td></tr>
+              <tr><th>Paredes</th><td>8 painéis: 2 Quadrado, 4 Diagonal, 2 Capela<span class="src">T</span></td></tr>
+              <tr><th>Modulação</th><td>2,40 + 1,20 + 2,40 m na fachada; 3,00 m na lateral<span class="src">S</span></td></tr>
+              <tr><th>Altura da parede</th><td>1,90 m no beiral · 2,45 m na cumeeira<span class="src">S</span></td></tr>
+              <tr><th>Caimento</th><td>≈ 18% (10°), duas águas<span class="src">S</span></td></tr>
+              <tr><th>Piso</th><td>5 painéis de 1,20 × 3,00 m<span class="src">S</span></td></tr>
+              <tr><th>Cobertura</th><td>Telha de aço zincado sobre manta térmica<span class="src">U</span></td></tr>
+              <tr><th>Mutirão</th><td>2 dias, 8 a 10 voluntários com a família<span class="src">U · T</span></td></tr>
+              <tr><th>Vida útil estimada</th><td>5 anos<span class="src">U</span></td></tr>
+              <tr><th>Custo em 2012</th><td>R$ 3.500 por casa; a família contribuía com R$ 150<span class="src">U</span></td></tr>
+            </tbody>
+          </table>
+        </section>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="app.js"></script>
+        <p class="note">
+          <b>T</b> <a href="https://br.techo.org/blog/os-diferentes-tipos-de-moradia-da-teto-brasil/">TETO Brasil</a> e figuras TETO 2015 ·
+          <b>U</b> <a href="https://bdta.abcd.usp.br/directbitstream/60903a0e-42fa-4d19-907b-6eec0f05e07d/LPedote.pdf">TCC Poli-USP, 2012</a> ·
+          <b>S</b> medido nas vistas do modelo SketchUp TETO 2017, com margem de uns 5 cm.
+          Seções de vigas, caibros e ripas foram estimadas pelas fotos de obra. Este modelo é uma reconstrução a partir de material público e não substitui o projeto executivo da TETO.
+        </p>
+      </aside>
+    </main>
+  </div>
 
-</body></html>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
