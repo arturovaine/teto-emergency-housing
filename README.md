@@ -7,6 +7,12 @@ medidas em metros.
 
 Tudo roda no navegador, sem build e sem servidor — é só abrir o `index.html`.
 
+## Demonstração
+
+![Navegação entre as vistas do modelo: perspectiva, fachada, lateral, fundos e planta](assets/views.gif)
+
+*Alternando entre as vistas predefinidas — Perspectiva → Fachada → Lateral → Fundos → Planta.*
+
 ## Recursos
 
 - **Modelo 3D** em [Three.js](https://threejs.org/) (r128), com sombras e textura
@@ -44,9 +50,11 @@ sequência de montagem e a ficha técnica legíveis.
 
 ```
 .
-├── index.html   # marcação da página (cabeçalho, viewport 3D, controles, ficha técnica)
-├── styles.css   # reset base + estilos da "prancha de obra" e temas claro/escuro
-└── app.js       # cena Three.js: geometria da casa, órbita, etapas, cotas e interação
+├── index.html       # marcação da página (cabeçalho, viewport 3D, controles, ficha técnica)
+├── styles.css       # reset base + estilos da "prancha de obra" e temas claro/escuro
+├── app.js           # cena Three.js: geometria da casa, órbita, etapas, cotas e interação
+└── assets/
+    └── views.gif    # demonstração da navegação entre as vistas
 ```
 
 ## Fontes
