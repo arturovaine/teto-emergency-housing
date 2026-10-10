@@ -23,7 +23,7 @@ const PARTS = [
   {id:'manta', step:6, name:'Manta térmica', meta:'alumínio + polietileno bolha',
    desc:'Fica sob a telha. Em ensaio com modelos reduzidos na Poli-USP (2012), cortou cerca de 48% do calor que atravessa a cobertura durante o dia, frente à telha de zinco sozinha.'},
   {id:'telhas', step:6, name:'Telhas de aço zincado', meta:'8 chapas · 2 águas · ≈ 18%',
-   desc:'Quatro chapas onduladas por água, com caimento para as extremidades curtas. Substituíram o fibrocimento usado nos primeiros anos.'},
+   desc:'Quatro chapas onduladas por água, com caimento para as extremidades curtas. Substituíram o fibrocimento usado nos primeiros anos. Fixadas aos caibros por pregos de telha com arruela de vedação, no cruzamento de cada ripa.'},
   {id:'aberturas', step:7, name:'Porta e janelas', meta:'1 porta · 3 janelas de madeira',
    desc:'Folhas cegas de madeira, sem vidro. A posição muda entre as versões porta na lateral e porta na fachada; aqui vale a da perspectiva TETO de 2015.'}
 ];
@@ -335,6 +335,21 @@ function water(side){
     const me = addMesh(w, geo, m); me.receiveShadow = false;
     me.position.set(-RW/2 + sw/2 + i * stepW, (LS + 0.011 - OV)/2, 0.057 + (i % 2) * 0.003);
   }});
+})();
+(function(){
+  /* pregos de telha: fixam as telhas (e ripas) nos caibros, no cruzamento de cada caibro com cada ripa */
+  const m = mat('telhas', {color:col('#6b7075'), roughness:0.5, metalness:0.72});
+  const headGeo = new THREE.CylinderGeometry(0.014, 0.014, 0.006, 10); // cabeça com arruela de vedação
+  const shankGeo = new THREE.CylinderGeometry(0.004, 0.003, 0.095, 8);  // haste que desce até o caibro
+  const caibroX = [-0.75, 0, 0.75], ripaY = [0.08, 0.80, 1.52, 2.24, 2.94];
+  [-1, 1].forEach(sd => {
+    const g = piece('telhas', [sd * 0.75, 4.6, 0]);
+    const w = water(sd); g.add(w);
+    caibroX.forEach(x => ripaY.forEach(y => {
+      const head = addMesh(w, headGeo, m); head.rotation.x = Math.PI / 2; head.position.set(x, y, 0.072);
+      const shank = addMesh(w, shankGeo, m); shank.rotation.x = Math.PI / 2; shank.position.set(x, y, 0.025);
+    }));
+  });
 })();
 
 /* ---------- 7. porta e janelas ---------- */
