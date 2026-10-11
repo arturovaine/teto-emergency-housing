@@ -27,10 +27,12 @@ irregular: relevo ondulado, buracos de cavadeira e camada de pedrisco sob cada p
 - Segmentos de 1 m subdivididos (~0,15 m) para acompanhar a curvatura. Opacidade atual mantida.
 
 ### 3. Escavação (peça `escavacao`, passo 1)
-- 12 soquetes (um por posição de piloti): cilindro/cone aberto, raio ~0,11→0,09 m,
-  profundidade ~0,45 m, faces internas (`BackSide`) em tom de terra escura.
-- Borda do soquete na altura do terreno local (`terrainY`); leve lábio/depressão no entorno
-  para mascarar a emenda com a superfície.
+- **Furos reais** abertos na malha do terreno: as faces cujo centro cai no raio do furo
+  (`R_OPEN`) são descartadas do índice da geometria → abertura de verdade na superfície.
+- 12 soquetes revestindo cada furo: cone aberto (raio ~0,17→0,085 m, prof. ~0,40 m),
+  faces internas (`BackSide`) em tom de terra escura, com piso (`CircleGeometry`) no fundo.
+- Colar (`RingGeometry`) de terra remexida na boca de cada furo, mascarando a borda
+  irregular da malha e dando contorno redondo; leve `dish` (`RIM_D`) no entorno.
 
 ### 4. Pedrisco (peça `pedrisco`, passo 1)
 - No fundo de cada soquete: disco de brita (cor cinza, leve bump) + 4–5 pedriscos soltos,
