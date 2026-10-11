@@ -4,27 +4,31 @@ const $ = s => document.querySelector(s);
 const vp = $('#viewport'), canvas = $('#c'), tagEl = $('#tag');
 
 /* ---------- peças e etapas ---------- */
-const STEPS = ['Pilotis','Vigas mestras','Painéis de piso','Paredes','Estrutura do telhado','Manta e telhas','Porta e janelas'];
+const STEPS = ['Terreno e escavação','Pilotis','Vigas mestras','Painéis de piso','Paredes','Estrutura do telhado','Manta e telhas','Porta e janelas'];
 const PARTS = [
-  {id:'pilotis', step:1, name:'Pilotis', meta:'12 estacas · Ø ≈ 12 cm',
+  {id:'escavacao', step:1, name:'Escavação', meta:'12 buracos de cavadeira',
+   desc:'Buracos abertos com cavadeira (trado manual) na malha 4 × 3, mais fundos que largos. Recebem o pedrisco e, em seguida, os pilotis — dispensam fôrma e concreto.'},
+  {id:'pedrisco', step:1, name:'Pedrisco', meta:'brita no fundo de cada buraco',
+   desc:'Camada de pedrisco (brita) no fundo de cada buraco. Drena a água e dá apoio firme ao piloti, reduzindo o recalque em terreno irregular.'},
+  {id:'pilotis', step:2, name:'Pilotis', meta:'12 estacas · Ø ≈ 12 cm',
    desc:'Estacas de madeira cravadas no solo em malha 4 × 3. Elevam o piso cerca de 0,5 m: afastam umidade, enxurrada e animais e dispensam terraplenagem em terreno irregular.'},
-  {id:'vigas', step:2, name:'Vigas mestras', meta:'3 linhas de 6,00 m',
+  {id:'vigas', step:3, name:'Vigas mestras', meta:'3 linhas de 6,00 m',
    desc:'Correm no sentido do comprimento, apoiadas nos pilotis, e recebem os painéis de piso. Seção estimada pela foto de obra.'},
-  {id:'piso', step:3, name:'Painéis de piso', meta:'5 painéis · 1,20 × 3,00 m',
+  {id:'piso', step:4, name:'Painéis de piso', meta:'5 painéis · 1,20 × 3,00 m',
    desc:'Assoalho de tábuas sobre barrotes, pré-fabricado. Os cinco painéis fecham a plataforma de 18 m².'},
-  {id:'quadrado', step:4, name:'Painel Quadrado', meta:'2 un. · 3,00 × 1,90 m',
+  {id:'quadrado', step:5, name:'Painel Quadrado', meta:'2 un. · 3,00 × 1,90 m',
    desc:'Fecha as duas extremidades curtas, para onde o telhado deságua. Um deles recebe janela.'},
-  {id:'diagonal', step:4, name:'Painel Diagonal', meta:'4 un. · 2,40 m · 1,90 → 2,34 m',
+  {id:'diagonal', step:5, name:'Painel Diagonal', meta:'4 un. · 2,40 m · 1,90 → 2,34 m',
    desc:'Trapezoidal, em versão esquerda e direita. O topo inclinado já dá o caimento do telhado. Recebe a porta e as janelas.'},
-  {id:'capela', step:4, name:'Painel Capela', meta:'2 un. · 1,20 m · pico a 2,45 m',
+  {id:'capela', step:5, name:'Painel Capela', meta:'2 un. · 1,20 m · pico a 2,45 m',
    desc:'Peça central das fachadas longas, com topo em bico. Apoia a viga de cumeeira.'},
-  {id:'estrutura', step:5, name:'Estrutura do telhado', meta:'cumeeira + 6 caibros + 10 ripas',
+  {id:'estrutura', step:6, name:'Estrutura do telhado', meta:'cumeeira + 6 caibros + 10 ripas',
    desc:'A cumeeira vence os 3 m entre as duas capelas, os caibros descem até os quadrados e as ripas recebem as telhas. Quantidades lidas no modelo SketchUp de 2017.'},
-  {id:'manta', step:6, name:'Manta térmica', meta:'alumínio + polietileno bolha',
+  {id:'manta', step:7, name:'Manta térmica', meta:'alumínio + polietileno bolha',
    desc:'Fica sob a telha. Em ensaio com modelos reduzidos na Poli-USP (2012), cortou cerca de 48% do calor que atravessa a cobertura durante o dia, frente à telha de zinco sozinha.'},
-  {id:'telhas', step:6, name:'Telhas de aço zincado', meta:'8 chapas · 2 águas · ≈ 18%',
+  {id:'telhas', step:7, name:'Telhas de aço zincado', meta:'8 chapas · 2 águas · ≈ 18%',
    desc:'Quatro chapas onduladas por água, com caimento para as extremidades curtas. Substituíram o fibrocimento usado nos primeiros anos. Fixadas aos caibros por pregos de telha com arruela de vedação, no cruzamento de cada ripa.'},
-  {id:'aberturas', step:7, name:'Porta e janelas', meta:'1 porta · 3 janelas de madeira',
+  {id:'aberturas', step:8, name:'Porta e janelas', meta:'1 porta · 3 janelas de madeira',
    desc:'Folhas cegas de madeira, sem vidro. A posição muda entre as versões porta na lateral e porta na fachada; aqui vale a da perspectiva TETO de 2015.'}
 ];
 const PART = Object.fromEntries(PARTS.map(p => [p.id, p]));
@@ -33,7 +37,7 @@ const PART = Object.fromEntries(PARTS.map(p => [p.id, p]));
 const partsEl = $('#parts');
 const rowEls = {};
 (function buildList(){
-  const days = [{t:'Dia 1 · fundação e piso', s:[1,2,3]}, {t:'Dia 2 · paredes e cobertura', s:[4,5,6,7]}];
+  const days = [{t:'Dia 1 · fundação e piso', s:[1,2,3,4]}, {t:'Dia 2 · paredes e cobertura', s:[5,6,7,8]}];
   days.forEach(d => {
     const h = document.createElement('p'); h.className = 'day'; h.textContent = d.t; partsEl.appendChild(h);
     const ol = document.createElement('ol'); ol.className = 'parts';
@@ -92,15 +96,23 @@ Object.assign(sun.shadow.camera, {left:-9, right:9, top:9, bottom:-9, near:1, fa
 sun.shadow.bias = -0.0004; sun.shadow.normalBias = 0.02;
 scene.add(sun);
 
-const groundMat = new THREE.MeshStandardMaterial({roughness:1, metalness:0});
+const groundMat = new THREE.MeshStandardMaterial({roughness:1, metalness:0, side:THREE.DoubleSide});
 const GX = 6, GZ = 4.5;        // meio-lote: 12 × 9 m
-const ground = new THREE.Mesh(new THREE.BoxGeometry(GX*2, 0.3, GZ*2), groundMat);
-ground.position.y = -0.15; ground.receiveShadow = true; scene.add(ground);
-const gpts = [];
-for (let x = -GX; x <= GX + 1e-6; x += 1) gpts.push(new THREE.Vector3(x, 0.004, -GZ), new THREE.Vector3(x, 0.004, GZ));
-for (let z = -GZ; z <= GZ + 1e-6; z += 1) gpts.push(new THREE.Vector3(-GX, 0.004, z), new THREE.Vector3(GX, 0.004, z));
-const grid = new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(gpts), new THREE.LineBasicMaterial({transparent:true, opacity:0.3}));
-scene.add(grid);
+const PIL_X = [0.43, 2.143, 3.857, 5.57], PIL_Z = [0.07, 1.5, 2.93]; // malha 4 × 3 dos pilotis (coords da casa)
+// terreno irregular com semente fixa: ruído de valor suavizado + leve caimento do lote
+const terrainY = (function(){
+  const NX = 9, NZ = 7, AMP = 0.17, r = rng(1337), h = [];
+  for (let i = 0; i < NX; i++){ h[i] = []; for (let j = 0; j < NZ; j++) h[i][j] = r() * 2 - 1; }
+  const sm = t => t * t * (3 - 2 * t);
+  return (x, z) => {
+    const fx = (x + GX) / (2 * GX) * (NX - 1), fz = (z + GZ) / (2 * GZ) * (NZ - 1);
+    const i = Math.max(0, Math.min(NX - 2, Math.floor(fx))), j = Math.max(0, Math.min(NZ - 2, Math.floor(fz)));
+    const tx = sm(fx - i), tz = sm(fz - j);
+    const n = h[i][j]*(1-tx)*(1-tz) + h[i+1][j]*tx*(1-tz) + h[i][j+1]*(1-tx)*tz + h[i+1][j+1]*tx*tz;
+    return n * AMP + x * 0.018 - z * 0.012;
+  };
+})();
+// a superfície do terreno (com crateras) e o grid drapeado são construídos após as medidas
 
 /* ---------- medidas (m) ---------- */
 const L = 6, W = 3;            // planta
@@ -113,6 +125,36 @@ const SILL = 1.14;
 const TC = 0.022, TF = 0.045, TW = TC + TF; // tábua, sarrafo, parede
 const ANG = Math.atan((HR - HE) / (L/2)), CA = Math.cos(ANG), SA = Math.sin(ANG);
 const Hx = x => HE + (HR - HE) * (1 - Math.abs(x - L/2) / (L/2));
+
+/* ---------- terreno: superfície irregular com furos de escavação + grid drapeado ---------- */
+const holeC = [];
+PIL_X.forEach(x => PIL_Z.forEach(z => holeC.push([x - L/2, z - W/2])));   // centros dos furos (coords do mundo)
+const R_RIM = 0.20, RIM_D = 0.06, R_OPEN = 0.12;   // dish do entorno e raio do furo aberto na malha
+const distHole = (x, z) => { let m = Infinity; for (let c = 0; c < holeC.length; c++){ const d = Math.hypot(x - holeC[c][0], z - holeC[c][1]); if (d < m) m = d; } return m; };
+{
+  const geo = new THREE.PlaneGeometry(GX*2, GZ*2, 320, 240); geo.rotateX(-Math.PI/2);
+  const p = geo.attributes.position;
+  for (let k = 0; k < p.count; k++){
+    const x = p.getX(k), z = p.getZ(k); let y = terrainY(x, z);
+    const d = distHole(x, z);
+    if (d < R_RIM){ const t = 1 - d / R_RIM; y -= RIM_D * (t * t * (3 - 2 * t)); }   // leve dish de terra remexida
+    p.setY(k, y);
+  }
+  // abre os furos de verdade: descarta as faces cujo centro cai dentro do raio do furo
+  const idx = geo.index.array, keep = [];
+  for (let t = 0; t < idx.length; t += 3){
+    const a = idx[t], b = idx[t+1], c = idx[t+2];
+    const cx = (p.getX(a) + p.getX(b) + p.getX(c)) / 3, cz = (p.getZ(a) + p.getZ(b) + p.getZ(c)) / 3;
+    if (distHole(cx, cz) >= R_OPEN) keep.push(a, b, c);
+  }
+  geo.setIndex(keep); geo.computeVertexNormals();
+  const ground = new THREE.Mesh(geo, groundMat); ground.receiveShadow = true; scene.add(ground);
+}
+const gpts = [], gst = 0.2, gY = (x, z) => terrainY(x, z) + 0.012;
+for (let x = -GX; x <= GX + 1e-6; x += 1) for (let z = -GZ; z < GZ - 1e-6; z += gst){ const z2 = Math.min(z + gst, GZ); gpts.push(new V3(x, gY(x, z), z), new V3(x, gY(x, z2), z2)); }
+for (let z = -GZ; z <= GZ + 1e-6; z += 1) for (let x = -GX; x < GX - 1e-6; x += gst){ const x2 = Math.min(x + gst, GX); gpts.push(new V3(x, gY(x, z), z), new V3(x2, gY(x2, z), z)); }
+const grid = new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(gpts), new THREE.LineBasicMaterial({transparent:true, opacity:0.3}));
+scene.add(grid);
 
 const house = new THREE.Group(); house.position.set(-L/2, 0, -W/2); scene.add(house);
 const pieces = [];
@@ -179,24 +221,61 @@ const cladMats = [];
 function cladMat(id){ const m = mat(id, {map:TEX.h.map, bumpMap:TEX.h.bump, bumpScale:0.012, roughness:0.85, metalness:0}); cladMats.push(m); return m; }
 const frameMat = id => mat(id, {color:col('#dcbb7e'), roughness:0.9, metalness:0});
 
-/* ---------- 1. pilotis ---------- */
+/* ---------- 2. pilotis ---------- */
 (function(){
   const g = piece('pilotis', [0,0,0]);
   const m = mat('pilotis', {color:col('#a47f52'), roughness:0.95});
-  const bury = 0.6;
-  [0.43, 2.143, 3.857, 5.57].forEach(x => [0.07, 1.5, 2.93].forEach(z => {
-    const me = addMesh(g, new THREE.CylinderGeometry(0.06, 0.065, HP + bury, 14), m);
-    me.position.set(x, (HP - bury)/2, z);
+  PIL_X.forEach(x => PIL_Z.forEach(z => {
+    const tY = terrainY(x - L/2, z - W/2);         // terreno sob este apoio
+    const hgt = HP + 0.45 - tY, cy = (HP - 0.45 + tY) / 2;   // topo fixo em HP; base enterrada 0,45 m
+    const me = addMesh(g, new THREE.CylinderGeometry(0.06, 0.065, hgt, 14), m);
+    me.position.set(x, cy, z);
   }));
 })();
 
-/* ---------- 2. vigas mestras ---------- */
+/* ---------- 1. terreno: escavação (buracos de cavadeira) ---------- */
+(function(){
+  const g = piece('escavacao', [0, 0, 0]);
+  const wall = mat('escavacao', {color:col('#3f3224'), roughness:1, side:THREE.BackSide});
+  const floor = mat('escavacao', {color:col('#4a3a28'), roughness:1});
+  const rim = mat('escavacao', {color:col('#7a6346'), roughness:1, side:THREE.DoubleSide});
+  PIL_X.forEach(x => PIL_Z.forEach(z => {
+    const tY = terrainY(x - L/2, z - W/2);
+    const top = tY - RIM_D, bot = tY - 0.46;           // soquete revestindo o furo aberto na malha
+    const sock = addMesh(g, new THREE.CylinderGeometry(0.17, 0.085, top - bot, 20, 1, true), wall);
+    sock.position.set(x, (top + bot) / 2, z); sock.castShadow = false;
+    const collar = addMesh(g, new THREE.RingGeometry(0.125, 0.22, 28), rim);   // boca redonda de terra remexida
+    collar.rotation.x = -Math.PI / 2; collar.position.set(x, top + 0.008, z); collar.castShadow = false;
+    const base = addMesh(g, new THREE.CircleGeometry(0.088, 18), floor);
+    base.rotation.x = -Math.PI / 2; base.position.set(x, bot + 0.002, z); base.castShadow = false;
+  }));
+})();
+
+/* ---------- 1. pedrisco (brita no fundo de cada buraco) ---------- */
+(function(){
+  const g = piece('pedrisco', [0, 0, 0]);
+  const m = mat('pedrisco', {color:col('#a9abae'), roughness:0.95, metalness:0.02});
+  const r = rng(99);
+  PIL_X.forEach(x => PIL_Z.forEach(z => {
+    const bot = terrainY(x - L/2, z - W/2) - 0.46;
+    const disc = addMesh(g, new THREE.CylinderGeometry(0.085, 0.075, 0.035, 14), m);
+    disc.position.set(x, bot + 0.018, z); disc.castShadow = false;
+    for (let k = 0; k < 5; k++){
+      const ang = r() * 6.28, rr = r() * 0.06, s = 0.012 + r() * 0.012;
+      const st = addMesh(g, new THREE.DodecahedronGeometry(s, 0), m);
+      st.position.set(x + Math.cos(ang) * rr, bot + 0.035 + r() * 0.015, z + Math.sin(ang) * rr);
+      st.rotation.set(r() * 3, r() * 3, r() * 3);
+    }
+  }));
+})();
+
+/* ---------- 3. vigas mestras ---------- */
 (function(){
   const m = mat('vigas', {color:col('#cfa868'), roughness:0.9});
   [0.07, 1.5, 2.93].forEach(z => { const g = piece('vigas', [0, 0.45, 0]); box(g, m, L, BEAM, 0.075, L/2, HP + BEAM/2, z); });
 })();
 
-/* ---------- 3. painéis de piso ---------- */
+/* ---------- 4. painéis de piso ---------- */
 (function(){
   const top = mat('piso', {map:texClone(TEX.h.map, 1, 2.5), bumpMap:texClone(TEX.h.bump, 1, 2.5), bumpScale:0.004, roughness:0.8});
   const jm = frameMat('piso');
@@ -209,7 +288,7 @@ const frameMat = id => mat(id, {color:col('#dcbb7e'), roughness:0.9, metalness:0
   }
 })();
 
-/* ---------- 4. paredes ---------- */
+/* ---------- 5. paredes ---------- */
 const openings = [];
 function leafMat(w, h){
   return mat('aberturas', {map:texClone(TEX.v.map, w/1.2, h/1.2), bumpMap:texClone(TEX.v.bump, w/1.2, h/1.2), bumpScale:0.01, roughness:0.85});
@@ -299,7 +378,7 @@ function quadPanel(left, win, ex){
 quadPanel(true, WIN_Q, [-1.3, 1.5, 0]);
 quadPanel(false, null, [1.3, 1.5, 0]);
 
-/* ---------- 5 e 6. telhado ---------- */
+/* ---------- 6 e 7. telhado ---------- */
 const LS = (L/2) / CA, OV = 0.25 / CA, SIDE = 0.10, RW = W + 2*SIDE;
 function water(side){
   const g = new THREE.Group(), m = new THREE.Matrix4();
@@ -352,7 +431,7 @@ function water(side){
   });
 })();
 
-/* ---------- 7. porta e janelas ---------- */
+/* ---------- 8. porta e janelas ---------- */
 const OPEN = 1.25;
 leaf([0.45, 1.5, 1.95], DOOR.x1 - DOOR.x0, RAIL, [DOOR.x0, FT, W], 0, -OPEN, 1);
 leaf([0.45, 1.5, 1.95], WIN_F.x1 - WIN_F.x0, RAIL - SILL, [WIN_F.x0, FT + SILL, W], 0, -1.9, 1);
@@ -387,7 +466,7 @@ dim(new V3(0, 0.02, W + 0.75), new V3(L, 0.02, W + 0.75), new V3(0, 0, 0.12), '6
 dim(new V3(-0.75, 0.02, 0), new V3(-0.75, 0.02, W), new V3(0.12, 0, 0), '3,00 m', new V3(0, 0.2, 0));
 dim(new V3(-0.3, FT, W + 0.3), new V3(-0.3, FT + HE, W + 0.3), new V3(0.1, 0, 0), '1,90 m', new V3(-0.45, 0, 0.1));
 dim(new V3(L/2, FT, W + 0.45), new V3(L/2, FT + HR, W + 0.45), new V3(0.1, 0, 0), '2,45 m', new V3(0, 1.42, 0));
-dim(new V3(L + 0.35, 0, W + 0.1), new V3(L + 0.35, HP, W + 0.1), new V3(0.1, 0, 0), '0,50 m', new V3(0.55, 0, 0));
+dim(new V3(L + 0.35, terrainY(L/2 + 0.35, W/2 + 0.1), W + 0.1), new V3(L + 0.35, HP, W + 0.1), new V3(0.1, 0, 0), '0,50 m', new V3(0.55, 0, 0));
 
 /* ---------- câmera e órbita ---------- */
 const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -494,7 +573,7 @@ const stepIn = $('#step'), stepOut = $('#stepOut'), exIn = $('#explode'), exOut 
 function applyStep(){
   const s = +stepIn.value;
   pieces.forEach(p => { p.visible = p.userData.step <= s; });
-  stepOut.textContent = s + ' de 7 · ' + STEPS[s - 1];
+  stepOut.textContent = s + ' de ' + STEPS.length + ' · ' + STEPS[s - 1];
   PARTS.forEach(p => rowEls[p.id].classList.toggle('pending', p.step > s));
   dirty = true;
 }
